@@ -1,0 +1,257 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- bootstrap CDN's -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <!-- jquery CDN's -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    
+    <!-- bootstrap CDN's -->
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+
+    <link rel="stylesheet" href="{% static 'shop/style.css' %}">
+</head>
+
+
+
+
+
+
+<body>
+
+    <div class="container">
+       
+        
+        <!-- NAvigation bar -->
+
+        <div class="row">
+            <div class="col-md-12">
+            <div class="container">
+                <header class="d-flex justify-content-center py-3">
+                  <ul class="nav nav-pills">
+                    <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">Features</a></li>
+
+                    <!-- popover -->
+                    <li class="nav-item">
+                      <button type="button" id="cart" class="btn btn-secondary" data-html="true" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Bottom popover">
+                        Cart(0)
+                      </button>
+                    </li>
+                    
+                    <li class="nav-item"><a href="#" class="nav-link">FAQs</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+                  </ul>
+                </header>
+              </div>
+            
+        </div>
+      </div>
+
+
+
+
+
+
+
+       <!-- search bar -->
+        <div class="row">
+            <div class="col-md-12">
+                <form class="card card-sm">
+                    <div class="card-body row no-gutters align-items-center">
+                        <div class="col">
+                            <input type="search" name="item_name" placeholder="Search for products" class="form-control form-control-borderless">
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-success" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+           
+        </div>
+
+
+        <!-- products -->
+        <div class="row">
+            {% for product in product_objects %}
+            <div class="col-md-3">
+                <div class="card">
+                    <img src="{{product.image}}" class="card-img-top">
+                    <div class="card-body">
+                        <div id="nm{{product.id}}" class="card-title" >{{product.title}}</div>
+                        <div class="card-text" id="price{{product.id}}">${{product.price}}</div>
+                        <a class="btn btn-warning" href="/{{product.id}}">View</a>
+                        <button class="btn atc btn-warning" id="{{product.id}}" href="#">Add To Cart</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- pagination -->
+        <div class="row">
+            <div class="col-md-3 offset-md-4">
+                <ul class="pagination">
+
+                    {% if product_objects.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{product_objects.previous_page_number}}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <a class="page-link" href="?page={{product_objects.number}}">Current</a>
+                    </li>
+           
+                    {% if product_objects.has_next %}
+                    <li class="page-item">
+                        <a  class="page-link" href="?page={{product_objects.next_page_number}}">Next</a>
+                    </li>
+                    {% endif %}
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+
+
+
+<script type="text/javascript">
+        console.log('hello');
+
+        // if the cart is not presented , create it
+        if(localStorage.getItem('cart')==null){
+            var cart = {};
+        }
+        
+        // if the cart is created , asign a variable to the one presented in the local storage
+        else{
+            cart=JSON.parse(localStorage.getItem('cart'));
+        }
+
+
+
+        // read the html document , get the element with a certain class , and on clicking it , perform action 
+        $(document).on('click','.atc',function(){
+            console.log("the add to cart is clicked");
+            var item_id =this.id.toString();
+            
+
+            // if the item id added to the card is presented before , increase its quantity , set anew value for quantity
+            if(cart[item_id]!=undefined){
+                
+                quantity=cart[item_id][0]+1  // incrementing the first item in the list of the item_id in the cart which is quantity by1 n
+                cart[item_id][0]=quantity ; //setting a new value for the quantity after implementing!
+                //setting the price of the item added before to be added to the same price of the same item to get total
+                cart[item_id][2]=cart[item_id][2]+parseFloat((document.getElementById("price"+item_id).innerHTML).replace("$", ""));  
+
+            }
+            
+            // if its not presented befor , create it , and sets its initial value to 1 to be incremented later , and get its name ! 
+            else{
+
+                quantity=1 ;
+                name=document.getElementById("nm"+item_id).innerHTML; //setting a variable to be name , where we get it from the element with id 
+                price=parseFloat((document.getElementById("price"+item_id).innerHTML).replace("$", ""));//getting the price of the new added item and initaiting it to be added to the same price later in case the user added the same item 
+                cart[item_id]=[quantity,name,price] ; // setting the value of the item_id to be a list having two values , name and quantity which we will call later
+
+                //example :cart[1][0] give me the quantity of the item that have id=1 , and zero represents the first item in the list which represents the quantity value
+
+            }
+            
+            console.log(cart) ;
+            
+            // saving the value of the items id inside the cart inside the local storage 
+            localStorage.setItem('cart',JSON.stringify(cart));
+
+            document.getElementById("cart").innerHTML="Cart("+Object.keys(cart).length+")";
+            
+            
+        }) ;
+         
+
+
+
+
+        // code for cart popover that will show the items added to the cart ! 
+        
+
+        DisplayCart(cart);//calling the function that we have created below that will modify the content of the popover !! 
+        
+
+        
+
+        // the cart that will loop through the cart id . then search for title of the products accodring to that id !
+        function DisplayCart(cart){
+
+    
+
+            var cartString="";
+            cartString+="<h5>Cart Items</h5>"; //initial value for cartstring
+            var cartIndex=1;     //initial value for cart index
+
+            let cartObject=JSON.parse(localStorage.getItem('cart'))
+
+            for (item in cartObject){
+                console.log(cartObject[item][0])
+                console.log(cartObject[item][1])
+                cartString+= cartIndex+") "+ cartObject[item][1]+"Qty:"+cartObject[item][0]+ "</br>";
+                cartIndex+=1
+            }
+
+            cartString+="<a href='/checkout'><button class='btn btn-outline-success' id='checkout'>Checkout</button></a>"
+            document.getElementById("cart").setAttribute('data-bs-content' , cartString) ; //displaying the content of the cart string which have the title of the elements in the popover !
+             
+            // enapling the popover functionality in addition to diplaying html in the popover 
+            $(function() {
+                    $('[data-bs-toggle="popover"]').popover({
+                        html: true,
+                    sanitize: false,
+                    })
+                })
+        }
+       
+
+        
+
+
+</script>
+
+
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

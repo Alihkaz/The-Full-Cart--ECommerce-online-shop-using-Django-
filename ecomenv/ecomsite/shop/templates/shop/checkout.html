@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- bootstrap CDN's -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+        <!-- jquery CDN's -->
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        
+        <!-- bootstrap CDN's -->
+    
+    
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    
+    
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    
+    
+        <link rel="stylesheet" href="{% static 'shop/style.css' %}">
+    <title>Document</title>
+</head>
+
+
+<body>
+  <hr class="my-4">
+    <div class="container">
+
+      <!-- items list group -->
+      <div class="row">
+        <div class="col-md-12">
+            
+                <ul class="list-group" id="item_list">
+                   
+                  </ul>
+            </div>
+        </div>
+        <hr class="my-4">
+       <!-- checkout form -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="row g-5">
+              <div class="col-md-7 col-lg-8">
+                
+                <form class="needs-validation" novalidate="" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" id="items" name="items">
+                  <div class="row g-3">
+                    <div class="col-sm-6">
+                      <label for="firstName" class="form-label">Name</label>
+                      <input type="text" class="form-control" id="name" name="name" placeholder="Alex" value="" required="">        
+                    </div>
+        
+                
+        
+                    
+        
+                    <div class="col-12">
+                      <label for="email" class="form-label">Email</label>
+                      <input type="text" class="form-control" id="email" name="email" placeholder="you@example.com">
+                    </div>
+        
+                    <div class="col-12">
+                      <label for="address" class="form-label">Address</label>
+                      <input type="text" class="form-control" id="address" name="address" placeholder="1234 Main St" required="">
+                    </div>
+        
+                    
+        
+                    <div class="col-md-4">
+                      <label for="City" class="form-label">City</label>
+                      <input type="text" class="form-control" id="city" name="city" placeholder="Beirut" required="">
+                    </div>
+        
+                    <div class="col-md-4">
+                      <label for="State" class="form-label">State</label>
+                      <input type="text" class="form-control" id="state" name="state" placeholder="hazmiye" required="">
+                    </div>
+
+
+                    <div class="col-md-4">
+                      <label for="zip" class="form-label">Zip</label>
+                      <input type="text" class="form-control" id="zipcode" name="zipcode" placeholder="0000" required="">
+                    </div>
+                  </div>
+
+                   <div class="col-md-4">
+                      <label for="zip" class="form-label">Amount to be paid</label>
+                      <input readonly="" type="text" class="form-control" id="total" name="total">
+                    </div>
+                  </div>
+                     
+                    </div>
+           
+        
+                  <hr class="my-4">
+                  <button   class="w-100 btn btn-success btn-lg" type="submit">Place Order</button>
+                  <hr class="my-4">
+                </form>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+    </div>
+    
+</body>
+
+<!-- the code to diplay the cart along with its items in thye check out form !  -->
+
+
+<script type="text/javascript"> 
+
+    if(localStorage.getItem('cart')==null)
+    { //if the cart is empty create for me a new cart
+      var cart={};
+    }
+
+    else
+    {
+      cart=JSON.parse(localStorage.getItem('cart')); // if there is a cart , then get it and parse it to json form 
+    }
+    
+    let total=0
+    for(item in cart)
+    {
+      let name=cart[item][1]; // getting the name(second item in the list value ) for the first item we loop throough which is an id
+      let quantity=cart[item][0]; // getting the quantitiy(first item in the list value ) for the first item we loop throough which is an id 
+      let price=cart[item][2]; //getting the price (third item in the value list)
+      total+=cart[item][2]
+
+      itemString=`<li class="list-group-item"> <span class="">${quantity}</span>  of  <span class="">${name}</span> :  <span class="badge badge-warning badge-pill" style="color: blue;font-size:15px">${price}$</span> </li>`; //preparing the element along with its content to be appended to the item list above
+      $('#item_list').append(itemString);//appending the element to be the content of the liust group 
+     
+    }
+
+    totatPrice=`<li class="list-group-item" d-flex justify-content-between align-items-center> <b>Your total is : ${total} $</b></li>`; //preparing the element along with its content to be appended to the item list above
+    $('#item_list').append(totatPrice);//appending the element to be the content of the liust group
+    $('#items').val(JSON.stringify(cart));
+    $("#total").val(total);
+
+</script>
+
+
+</html>
